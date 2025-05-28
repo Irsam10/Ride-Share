@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.io.WKTWriter;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -34,6 +32,7 @@ public class UserService {
             user.setAddress(userRequest.address());
             user.setPhone(userRequest.phone());
             user.setCurrentCoordinates(point);
+            user.setUserType(userRequest.userType());
             userRepository.save(user);
             log.info("User created: {}", user);
         } catch (Exception e) {
@@ -47,7 +46,7 @@ public class UserService {
             User user = userRepository.findById(id).orElseThrow();
             Point point = user.getCurrentCoordinates();
             return new UserRequest(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
-                    user.getAddress(), user.getPhone(), point.getX(), point.getY());
+                    user.getAddress(), user.getPhone(), point.getX(), point.getY(),user.getUserType());
         } catch (Exception e) {
             log.error("User could not be fetched: {}", id);
             log.error(e.getMessage());
@@ -61,7 +60,7 @@ public class UserService {
             return users.stream().map(user -> {
                 Point point = user.getCurrentCoordinates();
                 return new UserRequest(user.getId(), user.getName(),user.getEmail(),user.getPassword(),
-                        user.getAddress(),user.getPhone(),point.getX(),point.getY());
+                        user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType());
             }).toList();
         } catch (Exception e) {
             log.error("Users could not be fetched");
@@ -103,7 +102,7 @@ public class UserService {
             User user = userRepository.findByEmail(email);
             Point point = user.getCurrentCoordinates();
             return new UserRequest(user.getId(),user.getName(),user.getEmail(),user.getPassword()
-                    ,user.getAddress(),user.getPhone(),point.getX(),point.getY());
+                    ,user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType());
         }
         catch (Exception e)
         {
@@ -118,7 +117,7 @@ public class UserService {
             User user = userRepository.findByName(name);
             Point point = user.getCurrentCoordinates();
             return new UserRequest(user.getId(),user.getName(),user.getEmail(),user.getPassword()
-                        ,user.getAddress(),user.getPhone(),point.getX(),point.getY());
+                        ,user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType());
         }
         catch (Exception e)
         {

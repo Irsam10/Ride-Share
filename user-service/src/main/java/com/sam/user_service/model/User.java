@@ -23,6 +23,7 @@ public class User {
     private String password;
     private String address;
     private String phone;
+    private char userType; // 'D' for driver, 'P' for passenger
 
     @Column(name = "curr_coords", columnDefinition = "POINT")
     private Point currentCoordinates;

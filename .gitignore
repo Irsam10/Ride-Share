@@ -1,4 +1,4 @@
-HELP.md
+user-service/HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -15,10 +15,11 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
+.idea/*
 *.iws
 *.iml
 *.ipr
-
+*.sock
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -28,6 +29,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+target/
+user-service/mysql/
 ### VS Code ###
 .vscode/
