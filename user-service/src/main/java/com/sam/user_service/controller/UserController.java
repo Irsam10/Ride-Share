@@ -41,6 +41,14 @@ public class UserController {
     public List<UserRequest> getAllUsers() {
         return userService.getAllUsers();
     }
+    @GetMapping("/getUsersByUserStatus")
+    public List<UserRequest> getAllUsersByUserStatus(String userStatus) {
+        return userService.getUsersByStatus(userStatus);
+    }
+    @GetMapping("/getUsersByUserType")
+    public List<UserRequest> getAllUsersByUserType(String userType) {
+        return userService.getUsersByType(userType);
+    }
 
     @DeleteMapping()
     public String deleteUser(Long Id){
@@ -54,5 +62,16 @@ public class UserController {
         return "User: "+userRequest.name()+" Updated";
     }
 
+    @PutMapping("/updateUserStatus")
+    public String updateUserStatus(Long id, String status) {
+        userService.updateUserStatus(id, status);
+        return "User: " + id + " Status Updated to " + status;
+    }
+
+    @PutMapping("/updateUserCoordinates")
+    public String updateUserCoordinates(Long id, Double lat, Double lon) {
+        userService.updateUserCoordinates(id, lat, lon);
+        return "User: " + id + " Coordinates Updated to (" + lat + ", " + lon + ")";
+    }
 
 }

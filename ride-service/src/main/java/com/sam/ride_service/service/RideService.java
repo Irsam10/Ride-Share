@@ -111,6 +111,18 @@ public class RideService {
         }
         return List.of();
     }
+    public List<RideRequest> getRidesByStatus(Character status)
+    {
+        List<Ride> rides = rideRepository.findByStatus(status);
+        return rides.stream().map(ride -> {
+            Point startPoint = ride.getStartLocation();
+            Point endPoint = ride.getEndLocation();
+            return new RideRequest(ride.getId(), startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY(),
+                    ride.getPassengerId(), ride.getPassengerName(), ride.getVehicleType(),
+                    ride.getVehicleNumber(), ride.getRideType(), ride.getFare(), ride.getRideDistance());
+
+        }).toList();
+    }
     public Integer calculateDistance(Point start, Point end) {
         double lat1 = start.getY();
         double lon1 = start.getX();

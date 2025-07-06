@@ -4,9 +4,11 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class PublishRideServiceApplication {
     public static void main(String[] args) {
@@ -14,4 +16,5 @@ public class PublishRideServiceApplication {
                 .web(WebApplicationType.NONE)  // <-- Prevents web server from starting
                 .run(args);
     }
+
 }

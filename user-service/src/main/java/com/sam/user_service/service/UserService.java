@@ -3,6 +3,7 @@ package com.sam.user_service.service;
 import com.sam.user_service.dto.UserRequest;
 import com.sam.user_service.model.User;
 import com.sam.user_service.repository.UserRepository;
+import com.sam.user_service.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -33,6 +34,7 @@ public class UserService {
             user.setPhone(userRequest.phone());
             user.setCurrentCoordinates(point);
             user.setUserType(userRequest.userType());
+            user.setUserStatus(Constants.STATUS_NEW);// 'A' for active, 'I' for inactive, 'N' for new, 'B' for blocked
             userRepository.save(user);
             log.info("User created: {}", user);
         } catch (Exception e) {
@@ -46,7 +48,7 @@ public class UserService {
             User user = userRepository.findById(id).orElseThrow();
             Point point = user.getCurrentCoordinates();
             return new UserRequest(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
-                    user.getAddress(), user.getPhone(), point.getX(), point.getY(),user.getUserType());
+                    user.getAddress(), user.getPhone(), point.getX(), point.getY(),user.getUserType(),user.getUserStatus());
         } catch (Exception e) {
             log.error("User could not be fetched: {}", id);
             log.error(e.getMessage());
@@ -60,7 +62,7 @@ public class UserService {
             return users.stream().map(user -> {
                 Point point = user.getCurrentCoordinates();
                 return new UserRequest(user.getId(), user.getName(),user.getEmail(),user.getPassword(),
-                        user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType());
+                        user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType(),user.getUserStatus());
             }).toList();
         } catch (Exception e) {
             log.error("Users could not be fetched");
@@ -89,10 +91,35 @@ public class UserService {
             user.setAddress(userRequest.address());
             user.setPhone(userRequest.phone());
             user.setCurrentCoordinates(point);
+            user.setUserStatus(userRequest.userStatus());
             userRepository.save(user);
         }
         catch (Exception e){
             log.error("User could not be updated: {}", userRequest);
+            log.error(e.getMessage());
+        }
+    }
+    public void updateUserStatus(Long id, String status) {
+        try {
+            User user = userRepository.findById(id).orElseThrow();
+            user.setUserStatus(status);
+            userRepository.save(user);
+            log.info("User status updated: {} to {}", id, status);
+        } catch (Exception e) {
+            log.error("User status could not be updated: {}", id);
+            log.error(e.getMessage());
+        }
+    }
+
+    public void updateUserCoordinates(Long id, Double lat, Double lon) {
+        try {
+            User user = userRepository.findById(id).orElseThrow();
+            Point point = geometryFactory.createPoint(new Coordinate(lat, lon));
+            user.setCurrentCoordinates(point);
+            userRepository.save(user);
+            log.info("User coordinates updated: {} to ({}, {})", id, lat, lon);
+        } catch (Exception e) {
+            log.error("User coordinates could not be updated: {}", id);
             log.error(e.getMessage());
         }
     }
@@ -102,7 +129,7 @@ public class UserService {
             User user = userRepository.findByEmail(email);
             Point point = user.getCurrentCoordinates();
             return new UserRequest(user.getId(),user.getName(),user.getEmail(),user.getPassword()
-                    ,user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType());
+                    ,user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType(),user.getUserStatus());
         }
         catch (Exception e)
         {
@@ -117,7 +144,7 @@ public class UserService {
             User user = userRepository.findByName(name);
             Point point = user.getCurrentCoordinates();
             return new UserRequest(user.getId(),user.getName(),user.getEmail(),user.getPassword()
-                        ,user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType());
+                        ,user.getAddress(),user.getPhone(),point.getX(),point.getY(),user.getUserType(),user.getUserStatus());
         }
         catch (Exception e)
         {
@@ -125,5 +152,33 @@ public class UserService {
             log.error(e.getMessage());
         }
         return null;
+    }
+    public List<UserRequest> getUsersByStatus(String status){
+        try {
+            List<User> users = userRepository.findAllByUserStatus(status);
+            return users.stream().map(user -> {
+                Point point = user.getCurrentCoordinates();
+                return new UserRequest(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
+                        user.getAddress(), user.getPhone(), point.getX(), point.getY(), user.getUserType(), user.getUserStatus());
+            }).toList();
+        } catch (Exception e) {
+            log.error("Users could not be fetched by status: {}", status);
+            log.error(e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+    public List<UserRequest> getUsersByType(String type){
+        try {
+            List<User> users = userRepository.findAllByUserType(type);
+            return users.stream().map(user -> {
+                Point point = user.getCurrentCoordinates();
+                return new UserRequest(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
+                        user.getAddress(), user.getPhone(), point.getX(), point.getY(), user.getUserType(), user.getUserStatus());
+            }).toList();
+        } catch (Exception e) {
+            log.error("Users could not be fetched by type: {}", type);
+            log.error(e.getMessage());
+        }
+        return Collections.emptyList();
     }
 }

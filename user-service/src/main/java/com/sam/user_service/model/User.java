@@ -23,8 +23,8 @@ public class User {
     private String password;
     private String address;
     private String phone;
-    private char userType; // 'D' for driver, 'P' for passenger
-
+    private String userType; // 'D' for driver, 'P' for passenger
+    private String userStatus; // 'A' for active, 'I' for inactive, 'N' for new, 'B' for blocked
     @Column(name = "curr_coords", columnDefinition = "POINT")
     private Point currentCoordinates;
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/ride")
@@ -46,5 +47,16 @@ public class RideController {
     public String cancelRide(@RequestBody RideCancelRequest rideCancelRequest) {
         rideService.cancelRequest(rideCancelRequest);
         return "Ride cancelled";
+    }
+    @GetMapping("/getRidesByStatus")
+    public ResponseEntity<List<RideRequest>> getRidesByStatus(Character status)
+    {
+        try {
+            return ResponseEntity.status(HttpStatus.FOUND).body(rideService.getRidesByStatus(status));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }
