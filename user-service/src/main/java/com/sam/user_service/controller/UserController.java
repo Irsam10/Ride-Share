@@ -1,5 +1,6 @@
 package com.sam.user_service.controller;
 
+import com.sam.user_service.dto.LocationData;
 import com.sam.user_service.dto.UserRequest;
 import com.sam.user_service.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,11 @@ public class UserController {
         return userService.getUsersByType(userType);
     }
 
+    @GetMapping("/getAllUsersByUserTypeAndStatus")
+    public List<UserRequest> getAllUsersByUserTypeAndStatus(String userType, String userStatus) {
+        return userService.getUsersByTypeAndStatus(userType, userStatus);
+    }
+
     @DeleteMapping()
     public String deleteUser(Long Id){
         userService.deleteUser(Id);
@@ -68,10 +74,16 @@ public class UserController {
         return "User: " + id + " Status Updated to " + status;
     }
 
+
     @PutMapping("/updateUserCoordinates")
     public String updateUserCoordinates(Long id, Double lat, Double lon) {
         userService.updateUserCoordinates(id, lat, lon);
         return "User: " + id + " Coordinates Updated to (" + lat + ", " + lon + ")";
+    }
+
+    @GetMapping("/getLiveLocation")
+    public LocationData getLiveLocation(Long id) {
+        return userService.getLiveLocation(id);
     }
 
 }

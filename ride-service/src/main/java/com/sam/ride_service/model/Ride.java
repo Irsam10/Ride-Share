@@ -23,7 +23,7 @@ public class Ride {
 
     private Point startLocation;
     private Point endLocation;
-    private char status; // 'O' for ongoing, 'C' for completed, 'F' for failed, 'R' for rejected, 'A' for accepted,
+    private String status; // 'O' for ongoing, 'C' for completed, 'F' for failed, 'R' for rejected, 'A' for accepted,
     // 'S' for scheduled, 'X' for cancelled, 'P' for pending
     private Long driverId;
     private String driverName;

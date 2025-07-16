@@ -32,7 +32,7 @@ public class RideService {
             Ride ride = new Ride();
             ride.setStartLocation(startingPoint);
             ride.setEndLocation(endingPoint);
-            ride.setStatus('P');
+            ride.setStatus("P");
             ride.setPassengerId(rideRequest.passengerId());
             ride.setPassengerName(rideRequest.passengerName());
             ride.setVehicleType(rideRequest.vehicleType());
@@ -52,7 +52,7 @@ public class RideService {
     {
         try {
             Ride ride = rideRepository.findById(rideCancelRequest.id()).orElseThrow();
-            ride.setStatus('C');
+            ride.setStatus("C");
             ride.setRideEndTime(Time.valueOf(rideCancelRequest.rideEndTime()));
             ride.setRideFeedback(rideCancelRequest.rideFeedback());
 
@@ -111,7 +111,7 @@ public class RideService {
         }
         return List.of();
     }
-    public List<RideRequest> getRidesByStatus(Character status)
+    public List<RideRequest> getRidesByStatus(String status)
     {
         List<Ride> rides = rideRepository.findByStatus(status);
         return rides.stream().map(ride -> {
@@ -122,6 +122,19 @@ public class RideService {
                     ride.getVehicleNumber(), ride.getRideType(), ride.getFare(), ride.getRideDistance());
 
         }).toList();
+    }
+    public void updateRidesStatus(List<Long> rideIds, String status) {
+        try {
+            List<Ride> rides = rideRepository.findAllById(rideIds);
+            for (Ride ride : rides) {
+                ride.setStatus(status);
+            }
+            rideRepository.saveAll(rides);
+            log.info("Ride statuses updated to: {}", status);
+        } catch (Exception e) {
+            log.error("Ride statuses could not be updated: " + rideIds);
+            log.error(e.getMessage());
+        }
     }
     public Integer calculateDistance(Point start, Point end) {
         double lat1 = start.getY();
@@ -145,4 +158,26 @@ public class RideService {
     }
 
 
+    public List<RideRequest> transitionRidesStatus(String fromStatus, String toStatus) {
+        try {
+            List<Ride> rides = rideRepository.findByStatus(fromStatus);
+            for (Ride ride : rides) {
+                ride.setStatus(toStatus);
+            }
+            rideRepository.saveAll(rides);
+            log.info("Rides transitioned from {} to {}", fromStatus, toStatus);
+            return rides.stream().map(ride -> {
+                Point startPoint = ride.getStartLocation();
+                Point endPoint = ride.getEndLocation();
+                return new RideRequest(ride.getId(), startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY(),
+                        ride.getPassengerId(), ride.getPassengerName(), ride.getVehicleType(),
+                        ride.getVehicleNumber(), ride.getRideType(), ride.getFare(), ride.getRideDistance());
+
+            }).toList();
+        } catch (Exception e) {
+            log.error("Rides could not be transitioned from {} to {}", fromStatus, toStatus);
+            log.error(e.getMessage());
+        }
+        return List.of();
+    }
 }

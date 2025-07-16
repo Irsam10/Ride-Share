@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.sam</groupId>
-    <artifactId>driver-service</artifactId>
+    <artifactId>ride-dispatch-service</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Driver Service</name>
     <description>Ride Sharing Application Project - Driver Service</description>

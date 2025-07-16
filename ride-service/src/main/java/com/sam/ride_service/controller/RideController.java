@@ -49,10 +49,32 @@ public class RideController {
         return "Ride cancelled";
     }
     @GetMapping("/getRidesByStatus")
-    public ResponseEntity<List<RideRequest>> getRidesByStatus(Character status)
+    public ResponseEntity<List<RideRequest>> getRidesByStatus(String status)
     {
         try {
             return ResponseEntity.status(HttpStatus.FOUND).body(rideService.getRidesByStatus(status));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @PutMapping("/updateRidesStatus")
+    public ResponseEntity<String> updateRidesStatus(@RequestParam List<Long> rideIds, @RequestParam String status) {
+        try {
+            rideService.updateRidesStatus(rideIds, status);
+            return ResponseEntity.status(HttpStatus.OK).body("Ride status updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ride status update failed: " + e.getMessage());
+        }
+    }
+    @PutMapping("/fetchAndUpdateRidesStatus")
+    public ResponseEntity<List<RideRequest>> fetchAndUpdateRidesStatus(@RequestParam String fromStatus, @RequestParam String toStatus) {
+        try {
+            List<RideRequest> updatedRides = rideService.transitionRidesStatus(fromStatus, toStatus);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedRides);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {

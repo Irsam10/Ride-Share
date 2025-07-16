@@ -1,5 +1,6 @@
 package com.sam.user_service.service;
 
+import com.sam.user_service.dto.LocationData;
 import com.sam.user_service.dto.UserRequest;
 import com.sam.user_service.model.User;
 import com.sam.user_service.repository.UserRepository;
@@ -177,6 +178,33 @@ public class UserService {
             }).toList();
         } catch (Exception e) {
             log.error("Users could not be fetched by type: {}", type);
+            log.error(e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+
+    public LocationData getLiveLocation(Long id) {
+        try {
+            User user = userRepository.findById(id).orElseThrow();
+            Point point = user.getCurrentCoordinates();
+            return new LocationData(user.getId(), point.getX(), point.getY());
+        } catch (Exception e) {
+            log.error("Live location could not be fetched for user: {}", id);
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    public List<UserRequest> getUsersByTypeAndStatus(String userType, String userStatus) {
+        try {
+            List<User> users = userRepository.findAllByUserTypeAndUserStatus(userType, userStatus);
+            return users.stream().map(user -> {
+                Point point = user.getCurrentCoordinates();
+                return new UserRequest(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
+                        user.getAddress(), user.getPhone(), point.getX(), point.getY(), user.getUserType(), user.getUserStatus());
+            }).toList();
+        } catch (Exception e) {
+            log.error("Users could not be fetched by type: {} and status: {}", userType, userStatus);
             log.error(e.getMessage());
         }
         return Collections.emptyList();

@@ -8,7 +8,8 @@ import java.util.List;
 public interface RideRepository extends JpaRepository<Ride, Long> {
     // Custom query methods can be defined here if needed
     // For example, find rides by user ID, status, etc.
-    List<Ride> findByStatus(char status);
+    List<Ride> findByStatus(String status);
+
     List<Ride> findByPassengerId(Long passengerId);
 
     List<Ride> findByDriverId(Long driverId);

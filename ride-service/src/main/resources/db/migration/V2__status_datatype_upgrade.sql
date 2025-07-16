@@ -1,0 +1,2 @@
+ALTER TABLE t_ride
+    CHANGE COLUMN status status VARCHAR(1) NULL;
