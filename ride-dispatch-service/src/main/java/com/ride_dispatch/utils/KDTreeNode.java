@@ -7,16 +7,18 @@ import lombok.Setter;
 public class KDTreeNode {
     @Setter
     @Getter
-    DriverLocation driver;
+    DriverLocation driverLocation;
+
     @Setter
     @Getter
     KDTreeNode left, right;
+
     @Setter
     @Getter
     boolean isLatSplit;
 
     public KDTreeNode(DriverLocation driver, boolean isLatSplit){
-        this.driver = driver;
+        this.driverLocation = driver;
         this.isLatSplit = isLatSplit;
     }
 

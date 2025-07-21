@@ -23,9 +23,9 @@ public class KDTree {
 
 
         int medianIndex = driverLocations.size() / 2;
-        DriverLocation medianLocation = driverLocations.get(medianIndex);
+        DriverLocation medianDriverLocation = driverLocations.get(medianIndex);
 
-        KDTreeNode node = new KDTreeNode(medianLocation, isLatSplit);
+        KDTreeNode node = new KDTreeNode(medianDriverLocation, isLatSplit);
         node.setLeft(buildTree(driverLocations.subList(0, medianIndex), !isLatSplit));
         node.setRight(buildTree(driverLocations.subList(medianIndex + 1, driverLocations.size()), !isLatSplit));
 
@@ -47,24 +47,24 @@ public class KDTree {
                         PriorityQueue<Map.Entry<Double, DriverLocation>> heap) {
         if (node == null) return;
 
-        double dist = haversine(node.getDriver(), target);
+        double dist = haversine(node.getDriverLocation(), target);
         if (heap.size() < k) {
-            heap.offer(new AbstractMap.SimpleEntry<>(dist, node.getDriver()));
+            heap.offer(new AbstractMap.SimpleEntry<>(dist, node.getDriverLocation()));
         } else if (dist < heap.peek().getKey()) {
             heap.poll();
-            heap.offer(new AbstractMap.SimpleEntry<>(dist, node.getDriver()));
+            heap.offer(new AbstractMap.SimpleEntry<>(dist, node.getDriverLocation()));
         }
 
         boolean goLeft = node.isLatSplit()
-                ? target.lat() < node.getDriver().lat()
-                : target.lat() < node.getDriver().lon();
+                ? target.lat() < node.getDriverLocation().lat()
+                : target.lat() < node.getDriverLocation().lon();
 
         search(goLeft ? node.getLeft() : node.getRight(), target, k, heap);
 
         // Check if we need to search the other subtree
         double axisDist = node.isLatSplit()
-                ? Math.abs(target.lat() - node.getDriver().lat())
-                : Math.abs(target.lon() - node.getDriver().lon());
+                ? Math.abs(target.lat() - node.getDriverLocation().lat())
+                : Math.abs(target.lon() - node.getDriverLocation().lon());
 
         // convert axisDist from degrees to km roughly (~111 km per degree)
         if (heap.size() < k || axisDist * 111 < heap.peek().getKey()) {
