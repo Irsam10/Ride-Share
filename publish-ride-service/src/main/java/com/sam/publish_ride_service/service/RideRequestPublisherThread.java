@@ -4,32 +4,35 @@ import com.sam.publish_ride_service.dto.RideResponse;
 import com.sam.publish_ride_service.util.Constants;
 import com.sam.publish_ride_service.util.RideCache;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.cfg.Environment;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class RideRequestPublisherThread implements Runnable {
+public class RideRequestPublisherThread implements Runnable{
     private final RidePublisherService ridePublisherService;
     private final long pollingIntervalMillis;
     private RestTemplate restTemplate;
     private RideCache rideCache;
-
-    @Value("${app.ride-service-endpoint}")
-    private String publishRideEndpoint;
-
-    @Value("${app.ride-service-update-rides-status-endpoint}")
     private String updateRideStatusEndpoint;
 
-    public RideRequestPublisherThread( RidePublisherService ridePublisherService, RideCache rideCache,  long pollingIntervalMillis) {
+    public RideRequestPublisherThread( RidePublisherService ridePublisherService, RideCache rideCache,  long pollingIntervalMillis, String updateRideStatusEndpoint) {
         this.restTemplate = new RestTemplate();
         this.ridePublisherService = ridePublisherService;
         this.rideCache = rideCache;
         this.pollingIntervalMillis = pollingIntervalMillis;
+        this.updateRideStatusEndpoint = updateRideStatusEndpoint;
     }
 
     @Override
@@ -38,6 +41,7 @@ public class RideRequestPublisherThread implements Runnable {
             try {
                 // Fetch pending ride requests
                 log.info("Polling for pending ride requests...");
+                log.info("URL : {}", updateRideStatusEndpoint+ "?fromStatus={from}&toStatus={to}");
                 List<RideResponse> response = List.of((RideResponse) Objects.requireNonNull(restTemplate.exchange(
                         updateRideStatusEndpoint + "?fromStatus={from}&toStatus={to}",
                         HttpMethod.PUT,

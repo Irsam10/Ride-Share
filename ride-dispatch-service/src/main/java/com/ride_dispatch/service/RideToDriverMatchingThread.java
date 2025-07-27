@@ -27,21 +27,19 @@ public class RideToDriverMatchingThread implements Runnable {
         while (true) {
             try {
                 // Fetch pending rides from the cache
-                List<RideResponse> pendingRides = restTemplate.exchange(
-                        getPendingRidesEndpoint,
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<RideResponse>>() {}
-                ).getBody();
+//                List<RideResponse> pendingRides = restTemplate.exchange(
+//                        getPendingRidesEndpoint,
+//                        HttpMethod.GET,
+//                        null,
+//                        new ParameterizedTypeReference<List<RideResponse>>() {}
+//                ).getBody();
 
-                if( pendingRides != null && !pendingRides.isEmpty()) {
-                    // Publish each pending ride
-                    for (RideResponse ride : pendingRides) {
-                        rideToDriverMatchingService.matchRideRequests(ride);
-                    }
-                }
-
-
+//                if( pendingRides != null && !pendingRides.isEmpty()) {
+//                    // Publish each pending ride
+//                    for (RideResponse ride : pendingRides) {
+//                        rideToDriverMatchingService.matchRideRequests(ride);
+//                    }
+//                }
                 // Sleep for the specified interval
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
