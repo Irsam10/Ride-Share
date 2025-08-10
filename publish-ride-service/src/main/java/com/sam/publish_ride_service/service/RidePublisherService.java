@@ -1,6 +1,6 @@
 package com.sam.publish_ride_service.service;
 
-import com.sam.publish_ride_service.dto.RideResponse;
+import com.sam.publish_ride_service.dto.RideRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ public class RidePublisherService {
         this.kafkaProducer = kafkaProducer;
     }
 
-    public void publishRideRequest(RideResponse ride) {
+    public void publishRideRequest(RideRequest ride) {
         try {
             // Logic to publish the ride request (e.g., send to a messaging queue or notify riders)
             log.info("Publishing ride request: {}", ride);

@@ -1,7 +1,7 @@
 package com.sam.publish_ride_service.service;
 
 
-import com.sam.publish_ride_service.dto.RideResponse;
+import com.sam.publish_ride_service.dto.RideRequest;
 import com.sam.publish_ride_service.util.KafkaTopicChecker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaProducer {
 
-    private KafkaTemplate<String, RideResponse> kafkaTemplate;
+    private KafkaTemplate<String, RideRequest> kafkaTemplate;
 
     private KafkaTopicChecker topicChecker;
 
-    public KafkaProducer(KafkaTemplate<String, RideResponse> kafkaTemplate, KafkaTopicChecker topicChecker) {
+    public KafkaProducer(KafkaTemplate<String, RideRequest> kafkaTemplate, KafkaTopicChecker topicChecker) {
         this.kafkaTemplate = kafkaTemplate;
         this.topicChecker = topicChecker;
     }
 
 
-    public void sendRide(RideResponse ride, String topic) {
+    public void sendRide(RideRequest ride, String topic) {
         if(topicChecker.topicExists(topic)) {
             System.out.println("Topic exists, sending ride: " + ride);
             log.info("Topic exists, sending ride: {}", ride);

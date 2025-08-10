@@ -1,19 +1,13 @@
 package com.sam.publish_ride_service.service;
 
+import com.sam.publish_ride_service.dto.RideRequest;
 import com.sam.publish_ride_service.dto.RideResponse;
 import com.sam.publish_ride_service.util.Constants;
 import com.sam.publish_ride_service.util.RideCache;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.cfg.Environment;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -42,19 +36,35 @@ public class RideRequestPublisherThread implements Runnable{
                 // Fetch pending ride requests
                 log.info("Polling for pending ride requests...");
                 log.info("URL : {}", updateRideStatusEndpoint+ "?fromStatus={from}&toStatus={to}");
-                List<RideResponse> response = List.of((RideResponse) Objects.requireNonNull(restTemplate.exchange(
+                ResponseEntity<List<RideRequest>> response = restTemplate.exchange(
                         updateRideStatusEndpoint + "?fromStatus={from}&toStatus={to}",
                         HttpMethod.PUT,
                         null,
                         new ParameterizedTypeReference<>() {},
                         Constants.PENDING,  // fromStatus
-                        Constants.IN_PROGRESS  // toStatus
-                ).getBody()));
+                        Constants.PENDING  // toStatus -- temporarily changed to PENDING so I don't have to change it again and again to execute the case again, change to IN_PROGRESS after
+                );
+                List<RideRequest> rideRequests = Objects.requireNonNull(response.getBody());
+//                List<RideResponse> response = rideRequests.stream()
+//                        .map(req -> new RideResponse(
+//                               req.id(),
+//                                req.startLocationLat(),
+//                                req.startLocationLon(),
+//                                req.endLocationLat(),
+//                                req.endLocationLon(),
+//                                req.passengerId(),
+//                                req.passengerName(),
+//                                req.vehicleType(),
+//                                req.vehicleNumber(),
+//                                req.rideType(),
+//                                req.fare(),
+//                                req.rideDistance()
+//                        ))
+//                        .toList();
+                log.info("Found {} pending rides", rideRequests.size());
 
-                log.info("Found {} pending rides", response.size());
-
-                rideCache.updatePendingRides(response);
-                for (RideResponse ride : response) {
+                rideCache.updatePendingRides(rideRequests);
+                for (RideRequest ride : rideRequests) {
                     // Publish each ride request
                     ridePublisherService.publishRideRequest(ride);
                 }

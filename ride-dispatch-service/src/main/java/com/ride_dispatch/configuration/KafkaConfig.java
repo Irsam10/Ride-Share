@@ -27,12 +27,13 @@ public class KafkaConfig {
     public ConsumerFactory<String, RideResponse> rideConsumerFactory() {
         JsonDeserializer<RideResponse> deserializer = new JsonDeserializer<>(RideResponse.class);
         deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeHeaders(false);
 
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "my-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
+//        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
